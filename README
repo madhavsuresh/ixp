@@ -1,1 +1,6 @@
 IXP Mapping
+
+to run: 
+$ python tulip.py hosts.txt
+
+where hosts.txt has one host per line
