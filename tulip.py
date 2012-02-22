@@ -5,6 +5,7 @@ import urllib
 import re
 import json
 import sys
+import os
 
 endpoint = 'http://www-wanmon.slac.stanford.edu/cgi-wrap/tulip-viz.cgi?target=v3vee.org'
 
@@ -15,8 +16,13 @@ class Tulip():
 
     #input host name, output coordinates and servers that were hit
     def getHostInfo(self,name):
+        print name
+        f = open('log/' + name,'w')
         sock = urllib.urlopen(self._tulip_endpoint+name)
         raw_data = sock.read()
+        f.write(raw_data)
+        sock.close()
+        f.close()
         if 'Unable to get 3 minimun rtt values'  in raw_data:
             print 'Unable to triangulate host %s' % (name)
             return None
@@ -47,10 +53,18 @@ class Tulip():
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
+
+        try:
+            os.mkdir('log')
+        except OSError:
+            print 'log directory exists, will overwrite existing files..'
         t = Tulip()
         f = open(sys.argv[1],'r')
+
         for line in f:
-            t.getHostInfo(line)
+            t.getHostInfo(line.strip(' \n'))
+    else:
+        print 'usage: python tulip.py list_of_servers'
 
 
 
